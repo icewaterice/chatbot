@@ -1,0 +1,50 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Dec  6 11:44:46 2018
+
+@author: Administrator
+"""
+
+import requests
+import json
+from wxpy import *
+ 
+def get_response(msg):
+    api = 'http://openapi.tuling123.com/openapi/api/v2'
+    dat = {
+        "perception": {
+            "inputText": {
+                "text": msg
+            },
+            "inputImage": {
+                "url": "imageUrl"
+            },
+            "selfInfo": {
+                "location": {
+                    "city": "广州",
+                    "province": "广东",
+                    "street": ""
+                }
+            }
+        },
+        "userInfo": {
+            "apiKey": 'This is for api',
+            "userId": "fool"
+        }
+    }
+    dat = json.dumps(dat)
+    r = requests.post(api, data=dat).json()
+    mesage = r['results'][0]['values']['text']
+    print(r['results'][0]['values']['text'])
+    return mesage
+
+bot = Bot(cache_path = True)
+my_group = bot.groups().search('XXX')[0]
+print(my_group)
+@bot.register(my_group)
+def replay_my_groups(msg):
+    if msg.is_at:
+        if msg.type == 'Text':
+            print(type(msg))
+            content = msg.text
+            return get_response(content)
